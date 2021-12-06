@@ -71,7 +71,6 @@ def register():
         result = request.form           #Get the data submitted
         email = result["email"]
         password = result["pass"]
-        name = result["name"]
         try:
             #Try creating the user account using the provided data
             auth.create_user_with_email_and_password(email, password)
