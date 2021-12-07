@@ -3,7 +3,7 @@ This repo holds sourcecode for the backend used in the demo project for KEWeb Ha
 
 🛠 Getting Started <br />
 Install latest version of Python <br />
-Install project dependencies by running "pip install -r requirements.txt" from project root
+Install project dependencies by running "pip install -r requirements.txt" from project root <br />
 Run the main server and have fun!
 
 💻 Commands <br />
