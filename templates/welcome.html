@@ -44,7 +44,7 @@
 				<tr>
 					<td colspan="2" align="right">Total:</td>
 					<td align="right">{{ session['all_total_quantity'] }}</td>
-					<td align="right" colspan="2"><strong>&#8377; {{ session['all_total_price'] }}</strong></td>
+					<td align="right" colspan="2"><strong>$ {{ session['all_total_price'] }}</strong></td>
 					<td></td>
 				</tr>
 			</tbody>
@@ -66,7 +66,7 @@
 						<div class="product-title">{{ product.name }}</div>
 						<div class="product-price">$ {{ product.price }}</div>
 						<div class="cart-action">
-							<input type="hidden" name="sku" value="{{ product.sku }}"/>
+							<input type="hidden" name="name" value="{{ product.sku }}"/>
 							<input type="text" class="product-quantity" name="quantity" value="1" size="2" />
 							<input type="submit" value="Add to Cart" class="btnAddAction" />
 						</div>

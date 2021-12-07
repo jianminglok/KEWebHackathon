@@ -29,34 +29,6 @@ client = typesense.Client({
     'connection_timeout_seconds': 2
 })
 
-<<<<<<< HEAD
-=======
-
-# Run this part during initial setup to create the typesense collection
-"""
-# Drop pre-existing collection if any
-try:
-    client.collections['products'].delete()
-except Exception as e:
-    pass
-
-# Create a collection
-
-create_response = client.collections.create({
-    "name": "products",
-    "fields": [
-        {"name": "id", "type": "string"},
-        {"name": "name", "type": "string"},
-        {"name": "price", "type": "float"},
-        {"name": "sku", "type": "string"},
-        {"name": "image", "type": "string"},
-        {"name": "created_at", "type": "float"}
-    ],
-    "default_sorting_field": "created_at"
-})
-"""
-
->>>>>>> 7ee4e35c062cf3107de016750db60b1d564a4f26
 firebase = pyrebase.initialize_app(config)
 auth = firebase.auth()
 db = firebase.database()
@@ -67,10 +39,10 @@ def populate_typesense():
     try:
         products = db.child("products").get()
         for p in products.each():          
-            data_typesense = {"id": p.val()['name'], "name": p.val()['name'], "price": p.val()['price'],
+            data_typesense = {"id": p.val()['sku'], "name": p.val()['name'], "price": p.val()['price'],
                 "sku": p.val()['sku'], "image": p.val()['image'], "created_at": p.val()['created_at']}
             client.collections['products'].documents.create(data_typesense)
-            
+          
     except Exception as e:
         print(e)
                                                              
@@ -101,9 +73,6 @@ def create_collection():
     populate_typesense()
     
 create_collection()
-# Retrive typesense collection
-client.collections['products'].retrieve()
-
 
 #Login
 @app.route("/")
@@ -179,7 +148,6 @@ def logout():
 def products():
     try:
         if request.method == 'GET':
-<<<<<<< HEAD
             if 'email' in session:
                 try:
                     products = db.child("products").get()
@@ -191,46 +159,23 @@ def products():
                 except:
                     return render_template("welcome.html", email=session['email'], products={"error": "No products found"})
             else:  
-                return redirect(url_for('login'))
-                
-                
-=======
-            try:
-                products = db.child("products").get()
-                output = []
-                for p in products.each():
-                    output.append({"id": p.key(), "name": p.val()['name'], "price": p.val()['price'], "sku": p.val()[
-                                'sku'], "image": p.val()['image'], "created_at": p.val()['created_at']})
-                return Response(json.dumps({"products": output}), status=200, mimetype='application/json')
-            except:
-                return Response(json.dumps({"error": "No products found"}), status=400, mimetype='application/json')
->>>>>>> 7ee4e35c062cf3107de016750db60b1d564a4f26
+                return redirect(url_for('login'))         
         else:
             ## Admin side function for us to populate the database with products
             if 'secretKey' in request.form:
-                if request.form['secretKey'] == app.secret_key:
+                if request.form['secretKey'] == app.secret_key:  
                     name = request.form['name']
                     price = float(request.form['price'])
                     sku = request.form['sku']
                     image = request.form['image']
-                    created_at = time.time()
-<<<<<<< HEAD
-                    if image and sku and price and name and request.method == 'POST':
-                        try:
-                            data = {"name": name, "price": price,
-                                    "sku": sku, "image": image, "created_at": created_at}
-                            rec = db.child("products").push(data)
-                            data_typesense = {"id": rec['name'], "name": name, "price": price,
-                                            "sku": sku, "image": image, "created_at": created_at}
-=======
+                    created_at = time.time()                                          
                     if created_at and image and sku and price and name and request.method == 'POST':
                         try:
                             data = {"name": name, "price": price,
                                     "sku": sku, "image": image, "created_at": created_at}
                             rec = db.child("products").push(data) # push data to firebase realtime database
                             data_typesense = {"id": rec['name'], "name": name, "price": price,
-                                            "sku": sku, "image": image, "created_at": created_at} #creates the same record in typesense collection, but with the unique timestamp key in firebase included
->>>>>>> 7ee4e35c062cf3107de016750db60b1d564a4f26
+                                            "sku": sku, "image": image, "created_at": created_at}
                             client.collections['products'].documents.create(
                                 data_typesense)
                             return Response(json.dumps({"success": True}), status=200, mimetype='application/json')
@@ -239,26 +184,11 @@ def products():
                 else:
                     return Response(json.dumps({"error": "User not authenticated"}), status=403, mimetype='application/json')
             else:
-                    return Response(json.dumps({"error": "User not authenticated"}), status=403, mimetype='application/json')
+                return Response(json.dumps({"error": "User not authenticated"}), status=403, mimetype='application/json')
     except Exception as e:
         return Response(json.dumps({"error": e}), status=400, mimetype='application/json')
 
-# Sorts products using the keys name, price, quantity_sold
-
-@app.route('/products/sort/<method>', methods=['GET'])
-def products_sort(method):
-    try:
-        products = db.child("products").order_by_child(method).get()
-        output = []
-        for p in products.each():
-            output.append({"id": p.key(), "name": p.val()['name'], "price": p.val()['price'], "sku": p.val()[
-                'sku'], "image": p.val()['image'], "created_at": p.val()['created_at']})
-        return Response(json.dumps({"products": output}), status=200, mimetype='application/json')
-    except Exception as e:
-        return Response(json.dumps({"error": "No products found"}), status=400, mimetype='application/json')
-
 # Return individual product details when product ID is passed
-
 @app.route('/product/id/<id>', methods=['GET'])
 def product(id):
     try:
@@ -275,7 +205,6 @@ def product(id):
         return Response(json.dumps({"error": "Product not found"}), status=400, mimetype='application/json')
 
 # Search by product name using typesense
-
 @app.route('/search/<query>', methods=['GET'])
 def search(query):
     try:
@@ -299,49 +228,54 @@ def search(query):
 def add_to_cart():
 
     _quantity = int(request.form['quantity'])
-    _code = request.form['sku']
-    
+    _name = request.form['name']
+   
     try:
+        products = client.collections['products'].documents[_name].retrieve()
+        
+        '''
         products = client.collections['products'].documents.search({
-            'q': _code,
-            'query_by': 'sku',
+            'q': _name,
+            'query_by': 'name',
             'sort_by': 'created_at:desc'
         })
+        '''
+          
         try:
-  
-            for p in products['hits']:
-
-                itemArray = { _code : {'name' : p['document']['name'], 'sku' : _code, 'quantity' : _quantity, 'price' : p['document']['price'], 'image' :  p['document']['image'], 'total_price': _quantity * p['document']['price']}}
-         
-                all_total_price = 0
-                all_total_quantity = 0
+            '''
+            itemArray = { _name : {'name' : p['document']['name'], 'sku' :  p['document']['sku'], 'quantity' : _quantity, 'price' : p['document']['price'], 'image' :  p['document']['image'], 'total_price': _quantity * p['document']['price']}}
+            '''
             
-                session.modified = True
-                if 'cart_item' in session:
-                    print(session['cart_item'])
-                    if _code in session['cart_item']:
-                        for key, value in session['cart_item'].items():
-                            if _code == key:
-                                old_quantity = session['cart_item'][key]['quantity']
-                                total_quantity = old_quantity + _quantity
-                                session['cart_item'][key]['quantity'] = total_quantity
-                                session['cart_item'][key]['total_price'] = total_quantity * p['document']['price']
-                    else:
-                        session['cart_item'] = array_merge(session['cart_item'], itemArray)
-
+            itemArray = { _name : {'name' : products['name'], 'sku' :  products['sku'], 'quantity' : _quantity, 'price' : products['price'], 'image' :  products['image'], 'total_price': _quantity * products['price']}}
+             
+            all_total_price = 0
+            all_total_quantity = 0
+        
+            session.modified = True
+            if 'cart_item' in session:
+                if _name in session['cart_item']:
                     for key, value in session['cart_item'].items():
-                        individual_quantity = int(session['cart_item'][key]['quantity'])
-                        individual_price = float(session['cart_item'][key]['total_price'])
-                        all_total_quantity = all_total_quantity + individual_quantity
-                        all_total_price = all_total_price + individual_price
-                
+                        if _name == key:
+                            old_quantity = session['cart_item'][key]['quantity']
+                            total_quantity = old_quantity + _quantity
+                            session['cart_item'][key]['quantity'] = total_quantity
+                            session['cart_item'][key]['total_price'] = total_quantity * products['price']
                 else:
-                    session['cart_item'] = itemArray
-                    all_total_quantity = all_total_quantity + _quantity
-                    all_total_price = all_total_price + _quantity * p['document']['price']
-                
-                session['all_total_quantity'] = all_total_quantity
-                session['all_total_price'] = all_total_price
+                    session['cart_item'] = array_merge(session['cart_item'], itemArray)
+
+                for key, value in session['cart_item'].items():
+                    individual_quantity = int(session['cart_item'][key]['quantity'])
+                    individual_price = float(session['cart_item'][key]['total_price'])
+                    all_total_quantity = all_total_quantity + individual_quantity
+                    all_total_price = all_total_price + individual_price
+            
+            else:
+                session['cart_item'] = itemArray
+                all_total_quantity = all_total_quantity + _quantity
+                all_total_price = all_total_price + _quantity * products['price']
+            
+            session['all_total_quantity'] = all_total_quantity
+            session['all_total_price'] = all_total_price
      
             return redirect(url_for('products'))
         except Exception as e:
@@ -401,8 +335,6 @@ def array_merge( first_array , second_array ):
 	elif isinstance( first_array , set ) and isinstance( second_array , set ):
 		return first_array.union( second_array )
 	return False	
-
-
-       
+    
 if __name__ == "__main__":
-    app.run()
+    app.run(debug=True)
