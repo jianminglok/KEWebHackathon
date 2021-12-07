@@ -50,6 +50,17 @@ body {
     cursor: pointer;
 }
 
+#btnCheckout {
+	background-color: #ffffff;
+	border: #2b0dd8 1px solid;
+	padding: 5px 10px;
+	color: #2b0dd8;
+	float: right;
+	text-decoration: none;
+	border-radius: 3px;
+	margin: 10px 0px;
+}
+
 #product-grid .txt-heading {
 	margin-bottom: 18px;
 }
@@ -121,4 +132,32 @@ body {
 	text-align: center;
 	clear: both;
 	margin: 38px 0px;
+}
+
+.checkout-form {
+	margin: 38px 0px;
+}
+
+label {
+	margin-bottom: 10px;
+	display: block;
+}
+
+input {
+	width: 75%;
+	margin-bottom: 20px;
+	padding: 12px;
+	border: 1px solid #ccc;
+}
+
+#btnSubmit {
+	width: 25%;
+	background-color: #ffffff;
+	border: #2b0dd8 1px solid;
+	padding: 12px 10px;
+	color: #2b0dd8;
+	float: left;
+	text-decoration: none;
+	border-radius: 3px;
+	margin: 20px 0px;
 }

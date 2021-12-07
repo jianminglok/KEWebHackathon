@@ -11,9 +11,8 @@
 	</div>
 	
 	<div id="shopping-cart">
-		<div class="txt-heading">Shopping Cart</div>		
+		<div class="txt-heading">Checkout</div>		
 		{% if 'cart_item' in session %}
-			<a id="btnEmpty" href="{{ url_for('empty_cart') }}">Empty Cart</a>
 			<table class="tbl-cart" cellpadding="10" cellspacing="1">
 			<tbody>
 				<tr>
@@ -49,34 +48,22 @@
 				</tr>
 			</tbody>
 			</table>
-			<a id="btnCheckout" href="{{ url_for('checkout') }}">Checkout</a>
+
+            <form class="checkout-form" action="http://127.0.0.1:5000/checkout" method="POST">
+                <label for="name">Name</label>
+                <input type="text" placeholder="Name" name="name" id="name">
+
+                <label for="name">Address</label>
+                <input type="text" placeholder="Address" name="address" id="address">
+
+                <label for="name">Phone</label>
+                <input type="tel" placeholder="Phone" name="phone" id="phone">
+
+                <input type="submit" id="btnSubmit" value="Place Order">
+            </form>
 		{% else: %}
 			<div class="no-records">Your Cart is Empty</div>
 		{% endif %}
-	</div>
-	
-	<div id="product-grid">
-		<div class="txt-heading">Products</div>
-
-		{% for product in products %}
-
-			<div class="product-item">
-				<form method="post" action="/add">
-					<div class="product-image"><img height="150" width="255" src="{{ product.image }}"></div>
-					<div class="product-tile-footer">
-						<div class="product-title">{{ product.name }}</div>
-						<div class="product-price">$ {{ product.price }}</div>
-						<div class="cart-action">
-							<input type="hidden" name="sku" value="{{ product.sku }}"/>
-							<input type="text" class="product-quantity" name="quantity" value="1" size="2" />
-							<input type="submit" value="Add to Cart" class="btnAddAction" />
-						</div>
-					</div>
-				</form>
-			</div>
-
-		{% endfor %}
-	
 	</div>
 </body>
 </html>
