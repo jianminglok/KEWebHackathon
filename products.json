@@ -1,0 +1,26 @@
+
+{
+	"products": [
+      {
+        "name": "American Tourist",
+		"price": 12000.00,
+		"sku": "AT1200",
+		"image": "https://www.americantourister.com.sg/dw/image/v2/AAWQ_PRD/on/demandware.static/-/Sites-American-Tourister/default/dw9f3d36bc/images/frontec-spinner-exp-tsa/hi-res/134992_1834_hi-res_FRONT34_1.jpg?sw=500&sh=750",
+		"created_at": 1638871189.549649 
+      },
+	  {
+        "name": "Shoes",
+		"price": 100.00,
+		"sku": "SH100",
+		"image": "https://assets.adidas.com/images/h_840,f_auto,q_auto:sensitive,fl_lossy,c_fill,g_auto/e698609062b1453eacdaaa480123bd10_9366/ADVANTAGE_K_White_EF0213_01_standard.jpg",
+		"created_at": 1638871289.549649 
+      },
+	  {
+        "name": "Headphone",
+		"price": 400.00,
+		"sku": "HP400",
+		"image": "https://images-na.ssl-images-amazon.com/images/I/71lA3a2cpPL.__AC_SX300_SY300_QL70_ML2_.jpg",
+		"created_at": 1638871389.549649 
+      }
+	]
+}

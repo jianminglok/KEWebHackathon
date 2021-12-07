@@ -1,0 +1,5 @@
+re
+flask
+pyrebase
+python-dotenv
+typesense
