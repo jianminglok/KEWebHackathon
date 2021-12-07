@@ -6,10 +6,17 @@
 	<link href="{{ url_for('static', filename='style.css') }}" rel="stylesheet" type="text/css" />
 </head>
 <body>
+
+	<ul>
+	  <li><a class="active" href="/">Home</a></li>
+	</ul>
+	
 	<div class="main">
 		<h1 class="email">Hi, {{email}}</h1><hr style="width: 30%">
 	</div>
 	
+	
+
 	<div id="shopping-cart">
 		<div class="txt-heading">Shopping Cart</div>		
 		{% if 'cart_item' in session %}
@@ -61,7 +68,7 @@
 
 			<div class="product-item">
 				<form method="post" action="/add">
-					<div class="product-image"><img height="150" width="255" src="{{ product.image }}"></div>
+					<a href="{{ url_for('product' , id=product.sku) }}"><div class="product-image"><img height="150" width="255" src="{{ product.image }}"></div></a>
 					<div class="product-tile-footer">
 						<div class="product-title">{{ product.name }}</div>
 						<div class="product-price">$ {{ product.price }}</div>

@@ -189,19 +189,20 @@ def products():
         return Response(json.dumps({"error": e}), status=400, mimetype='application/json')
 
 # Return individual product details when product ID is passed
-@app.route('/product/id/<id>', methods=['GET'])
+@app.route('/products/id/<id>', methods=['GET'])
 def product(id):
     try:
-        product = db.child("products").child(id).get()
+        products = client.collections['products'].documents[id].retrieve()
+        #print(products)
         try:
-            json.dumps(product.val())
+            #output = {'name' : products['name'], 'sku' :  products['sku'], 'price' : products['price'], 'image' :  products['image']}
             
-            output = {"id": product.key(), "name": product.val()['name'], "price": product.val()['price'], "sku": product.val()[
-                'sku'], "image": product.val()['image'], "created_at": product.val()['created_at']}
-            return Response(json.dumps({"product": output}), status=200, mimetype='application/json')
+            return render_template("product.html", email=session['email'], product=products)
         except Exception as e:
+            print(e)
             return Response(json.dumps({"error": e}), status=400, mimetype='application/json')
     except Exception as e:
+        print(e)
         return Response(json.dumps({"error": "Product not found"}), status=400, mimetype='application/json')
 
 # Search by product name using typesense
@@ -232,20 +233,8 @@ def add_to_cart():
    
     try:
         products = client.collections['products'].documents[_name].retrieve()
-        
-        '''
-        products = client.collections['products'].documents.search({
-            'q': _name,
-            'query_by': 'name',
-            'sort_by': 'created_at:desc'
-        })
-        '''
-          
         try:
-            '''
-            itemArray = { _name : {'name' : p['document']['name'], 'sku' :  p['document']['sku'], 'quantity' : _quantity, 'price' : p['document']['price'], 'image' :  p['document']['image'], 'total_price': _quantity * p['document']['price']}}
-            '''
-            
+ 
             itemArray = { _name : {'name' : products['name'], 'sku' :  products['sku'], 'quantity' : _quantity, 'price' : products['price'], 'image' :  products['image'], 'total_price': _quantity * products['price']}}
              
             all_total_price = 0

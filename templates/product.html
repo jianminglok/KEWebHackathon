@@ -1,0 +1,32 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+	<title>KEWeb Hackathon</title>
+	<link href="{{ url_for('static', filename='style.css') }}" rel="stylesheet" type="text/css" />
+</head>
+<body>
+
+    <ul>
+	  <li><a class="active" href="/">Home</a></li>
+	</ul>
+	
+	<div class="main">
+		<h1 class="email">Hi, {{email}}</h1><hr style="width: 30%">
+	</div>
+	
+	<div id="product-grid">
+
+		<div class="txt-heading">{{ product.name }}</div>
+
+			<div class="product-item">
+				<div class="product-image"><img height="150" width="255" src="{{ product.image }}"></div>
+				<div class="product-tile-footer">
+					<div class="product-title">{{ product.name }}</div>
+					<div class="product-price">$ {{ product.price }}</div>
+				</div>
+			</div>
+	
+	</div>
+</body>
+</html>
