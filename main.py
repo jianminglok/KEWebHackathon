@@ -1,4 +1,3 @@
-import re
 import pyrebase
 from flask import Flask, flash, redirect, render_template, request, session, abort, url_for, Response, json
 from dotenv import load_dotenv
@@ -275,21 +274,21 @@ def search(query):
 def add_to_cart():
 
     _quantity = int(request.form['quantity'])
-    _name = request.form['name']
+    _sku = request.form['sku']
 
     try:
-        products = client.collections['products'].documents[_name].retrieve()
+        products = client.collections['products'].documents[_sku].retrieve()
         try:
-            itemArray = { _name : {'name' : products['name'], 'sku' :  products['sku'], 'quantity' : _quantity, 'price' : products['price'], 'image' :  products['image'], 'total_price': _quantity * products['price']}}
+            itemArray = { _sku : {'name' : products['name'], 'sku' :  products['sku'], 'quantity' : _quantity, 'price' : products['price'], 'image' :  products['image'], 'total_price': _quantity * products['price']}}
              
             all_total_price = 0
             all_total_quantity = 0
         
             session.modified = True
             if 'cart_item' in session:
-                if _name in session['cart_item']:
+                if _sku in session['cart_item']:
                     for key, value in session['cart_item'].items():
-                        if _name == key:
+                        if _sku == key:
                             old_quantity = session['cart_item'][key]['quantity']
                             total_quantity = old_quantity + _quantity
                             session['cart_item'][key]['quantity'] = total_quantity
@@ -381,6 +380,9 @@ def checkout():
                     'cart_item'], "total_quantity": session['all_total_quantity'], "total_price": session["all_total_price"]}
                 try:
                     rec = db.child("orders").push(order_data)
+                    email = session['email'] # cleart cart when order placed successfully
+                    session.clear()
+                    session['email'] = email
                     return render_template("order.html", email=session['email'], order_number=rec['name'])
                 except Exception as e:
                     print(e)
