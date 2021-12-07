@@ -6,6 +6,12 @@
 	<link href="{{ url_for('static', filename='style.css') }}" rel="stylesheet" type="text/css" />
 </head>
 <body>
+
+	<ul>
+	  <li><a class="active" href="/">Home</a></li>
+	  <li><a href="/logout">Logout</a></li>
+	</ul>
+	
 	<div class="main">
 		<h1 class="email">Thank you {{ email }}, order {{ order_number }} has been placed successfully</h1><hr style="width: 100%">
 	</div>

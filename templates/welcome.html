@@ -9,6 +9,7 @@
 
 	<ul>
 	  <li><a class="active" href="/">Home</a></li>
+	  <li><a href="/logout">Logout</a></li>
 	</ul>
 	
 	<div class="main">
@@ -42,7 +43,7 @@
 						<td  style="text-align:right;">$ {{ price }}</td>
 						<td  style="text-align:right;">$ {{ item_price }}</td>
 						<td style="text-align:center;">
-							<a href="{{ url_for('delete_product', code=session['cart_item'][key]['sku']) }}" class="btnRemoveAction">
+							<a href="{{ url_for('delete_product', code=session['cart_item'][key]['id']) }}" class="btnRemoveAction">
 								<img src="/static/icon-delete.png" alt="Remove Item" />
 							</a>
 						</td>
@@ -69,12 +70,12 @@
 
 			<div class="product-item">
 				<form method="post" action="/add">
-					<a href="{{ url_for('product' , id=product.sku) }}"><div class="product-image"><img height="150" width="255" src="{{ product.image }}"></div></a>
+					<a href="{{ url_for('product' , id=product.id) }}"><div class="product-image"><img height="150" width="255" src="{{ product.image }}"></div></a>
 					<div class="product-tile-footer">
 						<div class="product-title">{{ product.name }}</div>
 						<div class="product-price">$ {{ product.price }}</div>
 						<div class="cart-action">
-							<input type="hidden" name="name" value="{{ product.sku }}"/>
+							<input type="hidden" name="name" value="{{ product.id }}"/>
 							<input type="text" class="product-quantity" name="quantity" value="1" size="2" />
 							<input type="submit" value="Add to Cart" class="btnAddAction" />
 						</div>

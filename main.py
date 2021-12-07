@@ -33,21 +33,18 @@ auth = firebase.auth()
 db = firebase.database()
 app.secret_key = os.getenv("secretKey") or "supersecret123"
 
-
 def populate_typesense():
     print("Populating collection...")
     try:
         products = db.child("products").get()
         for p in products.each():          
-            data_typesense = {"id": p.val()['sku'], "name": p.val()['name'], "price": p.val()['price'],
+            data_typesense = {"id": p.key(), "name": p.val()['name'], "price": p.val()['price'],
                 "sku": p.val()['sku'], "image": p.val()['image'], "created_at": p.val()['created_at']}
             client.collections['products'].documents.create(data_typesense)
     except Exception as e:
         print(e)
 
 # Run this part during initial setup to create the typesense collection
-
-
 def create_collection():
     # Drop pre-existing collection if any
     print("Creating collection..")
@@ -153,8 +150,6 @@ def logout():
     return redirect(url_for('products'))
 
 # Returns all products
-
-
 @app.route('/products', methods=['GET', 'POST'])
 def products():
     try:
@@ -205,8 +200,6 @@ def products():
       
 
 # Sorts products using the keys name, price, quantity_sold
-
-
 @app.route('/products/sort/<method>', methods=['GET'])
 def products_sort(method):
     try:
@@ -220,25 +213,12 @@ def products_sort(method):
         return Response(json.dumps({"error": "No products found"}), status=400, mimetype='application/json')
 
 # Return individual product details when product ID is passed
-
-
 @app.route('/product/id/<id>', methods=['GET'])
-
 def product(id):
     try:
         products = client.collections['products'].documents[id].retrieve()
-        #print(products)
         try:
-            #output = {'name' : products['name'], 'sku' :  products['sku'], 'price' : products['price'], 'image' :  products['image']}
-            
             return render_template("product.html", email=session['email'], product=products)
-
-            json.dumps(product.val())
-
-            output = {"id": product.key(), "name": product.val()['name'], "price": product.val()['price'], "sku": product.val()[
-                'sku'], "image": product.val()['image'], "created_at": product.val()['created_at']}
-            return Response(json.dumps({"product": output}), status=200, mimetype='application/json')
-
         except Exception as e:
             print(e)
             return Response(json.dumps({"error": e}), status=400, mimetype='application/json')
@@ -247,8 +227,6 @@ def product(id):
         return Response(json.dumps({"error": "Product not found"}), status=400, mimetype='application/json')
 
 # Search by product name using typesense
-
-
 @app.route('/search/<query>', methods=['GET'])
 def search(query):
     try:
@@ -274,21 +252,21 @@ def search(query):
 def add_to_cart():
 
     _quantity = int(request.form['quantity'])
-    _sku = request.form['sku']
+    _id = request.form['name']
 
     try:
-        products = client.collections['products'].documents[_sku].retrieve()
+        products = client.collections['products'].documents[_id].retrieve()
         try:
-            itemArray = { _sku : {'name' : products['name'], 'sku' :  products['sku'], 'quantity' : _quantity, 'price' : products['price'], 'image' :  products['image'], 'total_price': _quantity * products['price']}}
+            itemArray = { _id : {'id': _id, 'name' : products['name'], 'sku' :  products['sku'], 'quantity' : _quantity, 'price' : products['price'], 'image' :  products['image'], 'total_price': _quantity * products['price']}}
              
             all_total_price = 0
             all_total_quantity = 0
         
             session.modified = True
             if 'cart_item' in session:
-                if _sku in session['cart_item']:
+                if _id in session['cart_item']:
                     for key, value in session['cart_item'].items():
-                        if _sku == key:
+                        if _id == key:
                             old_quantity = session['cart_item'][key]['quantity']
                             total_quantity = old_quantity + _quantity
                             session['cart_item'][key]['quantity'] = total_quantity
@@ -329,7 +307,6 @@ def empty_cart():
         return redirect(url_for('products'))
     except Exception as e:
         print(e)
-
 
 @app.route('/delete/<string:code>')
 def delete_product(code):
@@ -380,7 +357,7 @@ def checkout():
                     'cart_item'], "total_quantity": session['all_total_quantity'], "total_price": session["all_total_price"]}
                 try:
                     rec = db.child("orders").push(order_data)
-                    email = session['email'] # cleart cart when order placed successfully
+                    email = session['email'] # clear cart when order placed successfully
                     session.clear()
                     session['email'] = email
                     return render_template("order.html", email=session['email'], order_number=rec['name'])

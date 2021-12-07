@@ -6,6 +6,12 @@
 	<link href="{{ url_for('static', filename='style.css') }}" rel="stylesheet" type="text/css" />
 </head>
 <body>
+	
+	<ul>
+	  <li><a class="active" href="/">Home</a></li>
+	  <li><a href="/logout">Logout</a></li>
+	</ul>
+	    
 	<div class="main">
 		<h1 class="email">Hi, {{email}}</h1><hr style="width: 30%">
 	</div>
@@ -42,7 +48,7 @@
 			</tbody>
 			</table>
 
-            <form class="checkout-form" action="http://127.0.0.1:5000/checkout" method="POST">
+            <form class="checkout-form" action="/checkout" method="POST">
                 <label for="name">Name</label>
                 <input type="text" placeholder="Name" name="name" id="name">
 
