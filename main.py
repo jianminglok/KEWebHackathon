@@ -1,3 +1,4 @@
+import re
 import pyrebase
 from flask import Flask, flash, redirect, render_template, request, session, abort, url_for, Response, json
 from dotenv import load_dotenv
@@ -10,6 +11,7 @@ load_dotenv()  # take environment variables from .env.
 app = Flask(__name__)       #Initialze flask constructor
 
 #replace with your own API key
+
 config = {
   "apiKey": os.getenv("firebase_apiKey"), 
   "authDomain": os.getenv("authDomain"),
@@ -28,6 +30,7 @@ client = typesense.Client({
     'connection_timeout_seconds': 2
 })
 
+
 # Run this part during initial setup to create the typesense collection
 """
 # Drop pre-existing collection if any
@@ -41,11 +44,11 @@ except Exception as e:
 create_response = client.collections.create({
     "name": "products",
     "fields": [
+        {"name": "id", "type": "string"},
         {"name": "name", "type": "string"},
         {"name": "price", "type": "float"},
-        {"name": "quantity_sold", "type": "int32"},
         {"name": "sku", "type": "string"},
-        {"name": "stock_count", "type": "int32"},
+        {"name": "image", "type": "string"},
         {"name": "created_at", "type": "float"}
     ],
     "default_sorting_field": "created_at"
@@ -148,7 +151,7 @@ def products():
                 output = []
                 for p in products.each():
                     output.append({"id": p.key(), "name": p.val()['name'], "price": p.val()['price'], "sku": p.val()[
-                                'sku'], "stock_count": p.val()['stock_count'], "quantity_sold": p.val()['quantity_sold'], "created_at": p.val()['created_at']})
+                                'sku'], "image": p.val()['image'], "created_at": p.val()['created_at']})
                 return Response(json.dumps({"products": output}), status=200, mimetype='application/json')
             except:
                 return Response(json.dumps({"error": "No products found"}), status=400, mimetype='application/json')
@@ -159,16 +162,15 @@ def products():
                     name = request.form['name']
                     price = float(request.form['price'])
                     sku = request.form['sku']
-                    stock_count = int(request.form['stock_count'])
-                    quantity_sold = 0
+                    image = request.form['image']
                     created_at = time.time()
-                    if stock_count and sku and price and name and request.method == 'POST':
+                    if created_at and image and sku and price and name and request.method == 'POST':
                         try:
                             data = {"name": name, "price": price,
-                                    "sku": sku, "stock_count": stock_count, "quantity_sold": quantity_sold, "created_at": created_at}
-                            rec = db.child("products").push(data)
+                                    "sku": sku, "image": image, "created_at": created_at}
+                            rec = db.child("products").push(data) # push data to firebase realtime database
                             data_typesense = {"id": rec['name'], "name": name, "price": price,
-                                            "sku": sku, "stock_count": stock_count, "quantity_sold": quantity_sold, "created_at": created_at}
+                                            "sku": sku, "image": image, "created_at": created_at} #creates the same record in typesense collection, but with the unique timestamp key in firebase included
                             client.collections['products'].documents.create(
                                 data_typesense)
                             return Response(json.dumps({"success": True}), status=200, mimetype='application/json')
@@ -190,7 +192,7 @@ def products_sort(method):
         output = []
         for p in products.each():
             output.append({"id": p.key(), "name": p.val()['name'], "price": p.val()['price'], "sku": p.val()[
-                'sku'], "stock_count": p.val()['stock_count'], "quantity_sold": p.val()['quantity_sold'], "created_at": p.val()['created_at']})
+                'sku'], "image": p.val()['image'], "created_at": p.val()['created_at']})
         return Response(json.dumps({"products": output}), status=200, mimetype='application/json')
     except Exception as e:
         return Response(json.dumps({"error": "No products found"}), status=400, mimetype='application/json')
@@ -205,14 +207,14 @@ def product(id):
             json.dumps(product.val())
             
             output = {"id": product.key(), "name": product.val()['name'], "price": product.val()['price'], "sku": product.val()[
-                'sku'], "stock_count": product.val()['stock_count'], "quantity_sold": product.val()['quantity_sold'], "created_at": product.val()['created_at']}
+                'sku'], "image": product.val()['image'], "created_at": product.val()['created_at']}
             return Response(json.dumps({"product": output}), status=200, mimetype='application/json')
         except Exception as e:
             return Response(json.dumps({"error": e}), status=400, mimetype='application/json')
     except Exception as e:
         return Response(json.dumps({"error": "Product not found"}), status=400, mimetype='application/json')
 
-# Search by product name
+# Search by product name using typesense
 
 @app.route('/search/<query>', methods=['GET'])
 def search(query):
@@ -224,9 +226,9 @@ def search(query):
         })
         try:
             output = []
-            for p in products['hits']:
+            for p in products['hits']: # iterate through data returned from typesense collection
                 output.append({"id": p['document']['id'], "name": p['document']['name'], "price": p['document']['price'], "sku": p['document'][
-                    'sku'], "stock_count": p['document']['stock_count'], "quantity_sold": p['document']['quantity_sold'], "created_at": p['document']['created_at']})
+                    'sku'], "image": p['document']['image'], "created_at": p['document']['created_at']})
             return Response(json.dumps({"products": output}), status=200, mimetype='application/json')
         except:
             return Response(json.dumps({"error": "Error searching product"}), status=400, mimetype='application/json')
@@ -234,4 +236,4 @@ def search(query):
         return Response(json.dumps({"error": e}), status=400, mimetype='application/json')
    
 if __name__ == "__main__":
-    app.run(debug=True)
+    app.run()
