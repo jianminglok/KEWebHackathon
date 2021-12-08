@@ -721,7 +721,7 @@ def api_product(id):
         )
 
 
-# Sorts products using the keys name, price, quantity_sold
+# Sorts products using the keys name, price
 @app.route("/api/products/sort/<method>", methods=["GET"])
 def api_products_sort(method):
     if authenticated():

@@ -1,0 +1,9 @@
+{
+  "rules": {
+    ".read": "now < 1641225600000",  // 2022-1-4
+    ".write": "now < 1641225600000",  // 2022-1-4
+    "products": {
+      ".indexOn": ["name", "price", "sku", "created_at"]
+    },
+  }
+}
