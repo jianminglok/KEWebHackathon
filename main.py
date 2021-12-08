@@ -743,6 +743,7 @@ def api_products_sort(method):
                 json.dumps({"success": output}), status=200, mimetype="application/json"
             )
         except Exception as e:
+            print(e)
             return Response(
                 json.dumps({"error": "No products found"}),
                 status=200,
