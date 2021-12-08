@@ -1,0 +1,68 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+	<title>KEWeb Hackathon</title>
+	<link href="{{ url_for('static', filename='style.css') }}" rel="stylesheet" type="text/css" />
+</head>
+<body>
+
+	<ul>
+	  <li><a class="active" href="/">Home</a></li>
+	  <li><a href="{{ url_for('vieworder') }}">View Orders</a></li>
+	  <li><a href="{{ url_for('logout') }}">Logout</a></li>
+	</ul>
+	
+	<div class="main">
+		<h1 class="email">Hi, {{email}}</h1><hr style="width: 30%">
+	</div>
+	
+	<div id="shopping-cart">
+		<div class="txt-heading">Orders</div>	
+		<br>
+		<br>
+		
+		{% if orders %}
+		{% for o in orders %}
+			<table class="tbl-cart" cellpadding="10" cellspacing="1">
+			<p> Created at {{ o['created_at'] }}</p>
+			<p> Name: {{ o['name'] }}</p>
+			<p> Address: {{ o['address'] }}</p>
+			<p> Phone Number: {{ o['phone'] }}</p>
+			<tbody>
+				<tr>
+					<th style="text-align:left;">Name</th>
+					<th style="text-align:left;">SKU</th>
+					<th style="text-align:right;" width="5%">Quantity</th>
+					<th style="text-align:right;" width="10%">Unit Price</th>
+					<th style="text-align:right;" width="10%">Price</th>
+				</tr>
+				
+				{% for p in o['items'] %}
+	
+					<tr>
+						<td><img src="{{ o['items'][p]['image'] }}" class="cart-item-image" />{{ o['items'][p]['name'] }}</td>
+						<td>{{ o['items'][p]['sku'] }}</td>
+						<td style="text-align:right;">{{ o['items'][p]['quantity'] }}</td>
+						<td  style="text-align:right;">$ {{ o['items'][p]['price'] }}</td>
+						<td  style="text-align:right;">$ {{ o['items'][p]['total_price'] }}</td>		
+					</tr>
+
+				{% endfor %}
+				
+				<tr>
+					<td colspan="2" align="right">Total:</td>
+					<td align="right">{{ o['total_quantity'] }}</td>
+					<td align="right" colspan="2"><strong>$ {{ o['total_price'] }}</strong></td>
+				</tr>
+			</tbody>
+			</table>
+			<br>
+		{% endfor %}
+		{% else: %}
+			<div class="no-records">There are no completed orders</div>
+		{% endif %}
+	</div>
+	
+</body>
+</html>
