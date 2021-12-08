@@ -13,6 +13,7 @@ python main.py Launch the main web server
 Pre-guide.docx Instructions on creating Typesense, Firebase Authentication and Realtime database <br />
 products.json Sample data file used for Realtime database <br />
 requirements.txt Project dependencies <br />
+firebase.txt Firewall rules for Realtime Database <br />
 /static Icons, CSS files used for simple display <br />
 /templates HTML files used for simple display 
 
